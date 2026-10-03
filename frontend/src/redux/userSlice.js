@@ -63,6 +63,30 @@ const userSlice = createSlice({
         sound: true,
       };
       state.appSettings = { ...currentSettings, ...action.payload };
+    },
+    updateOtherUserProfile: (state, action) => {
+      const { userId, fullName, profilePhoto } = action.payload || {};
+      if (userId) {
+        if (state.otherUsers && Array.isArray(state.otherUsers)) {
+          state.otherUsers = state.otherUsers.map((u) => {
+            if (u._id === userId) {
+              return {
+                ...u,
+                ...(fullName ? { fullName } : {}),
+                ...(profilePhoto ? { profilePhoto } : {}),
+              };
+            }
+            return u;
+          });
+        }
+        if (state.selectedUser && state.selectedUser._id === userId) {
+          state.selectedUser = {
+            ...state.selectedUser,
+            ...(fullName ? { fullName } : {}),
+            ...(profilePhoto ? { profilePhoto } : {}),
+          };
+        }
+      }
     }
   },
 });
@@ -75,7 +99,8 @@ export const {
   setBlockedUsers,
   toggleMuteUser,
   toggleBlockUser,
-  updateSettings
+  updateSettings,
+  updateOtherUserProfile
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BiSearchAlt2 } from "react-icons/bi";
-import { HiOutlineLogout, HiX, HiOutlineCog } from "react-icons/hi";
+import { HiOutlineLogout, HiX, HiOutlineCog, HiCamera } from "react-icons/hi";
 import OtherUsers from "./OtherUsers";
 import SettingsModal from "./SettingsModal";
 import axios from "axios";
@@ -58,18 +58,23 @@ const Sidebar = () => {
       >
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-full overflow-hidden border shadow-sm ${
+            onClick={() => setSettingsOpen(true)}
+            className={`w-10 h-10 rounded-full overflow-hidden border shadow-sm cursor-pointer relative group ${
               isDarkMode ? "border-white/20 bg-slate-800" : "border-slate-300 bg-slate-200"
             }`}
+            title="Click to edit profile photo"
           >
             <img
               src={authUser?.profilePhoto || `https://api.dicebear.com/10.x/loops/svg?seed=${authUser?.username || "user"}`}
               alt={authUser?.fullName}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:opacity-75 transition-opacity"
               onError={(e) => {
                 e.target.src = `https://api.dicebear.com/10.x/loops/svg?seed=${authUser?.username || "user"}`;
               }}
             />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <HiCamera size={16} className="text-white" />
+            </div>
           </div>
           <div className="flex flex-col">
             <p

@@ -1,6 +1,8 @@
 import { User } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { uploadToCloudinary } from "../config/cloudinary.js";
+import { io } from "../socket/socket.js";
 
 export const register = async (req, res) => {
     try {
@@ -9,29 +11,40 @@ export const register = async (req, res) => {
             return res.status(400).json({ message: "All fields are required" });
         }
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: "Password do not match" });
+            return res.status(400).json({ message: "Passwords do not match" });
         }
 
         const user = await User.findOne({ username });
         if (user) {
-            return res.status(400).json({ message: "Username already exit try different" });
+            return res.status(400).json({ message: "Username already exists, try a different one" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const maleProfilePhoto = `https://api.dicebear.com/10.x/loops/svg?seed=${username}`;
-        const femaleProfilePhoto = `https://api.dicebear.com/10.x/loops/svg?seed=${username}`;
+        let profilePhotoUrl = `https://api.dicebear.com/10.x/loops/svg?seed=${username}`;
+
+        // Upload custom profile photo to Cloudinary if provided
+        if (req.file) {
+            try {
+                const cloudRes = await uploadToCloudinary(req.file.buffer);
+                if (cloudRes?.secure_url) {
+                    profilePhotoUrl = cloudRes.secure_url;
+                }
+            } catch (uploadErr) {
+                console.error("Cloudinary upload failed, falling back to avatar:", uploadErr);
+            }
+        }
 
         await User.create({
             fullName,
             username,
             password: hashedPassword,
             gender,
-            profilePhoto: gender === "male" ? maleProfilePhoto : femaleProfilePhoto,
+            profilePhoto: profilePhotoUrl,
         });
         return res.status(201).json({
             message: "Account created successfully.",
             success: true
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error during registration", success: false });
@@ -139,3 +152,84 @@ export const toggleBlock = async (req, res) => {
         return res.status(500).json({ message: "Failed to toggle block status." });
     }
 }
+
+export const updateProfilePhoto = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        if (!req.file) {
+            return res.status(400).json({ message: "Please select an image file to upload." });
+        }
+
+        const cloudRes = await uploadToCloudinary(req.file.buffer);
+        if (!cloudRes?.secure_url) {
+            return res.status(500).json({ message: "Failed to upload image to Cloudinary." });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            loggedInUserId,
+            { profilePhoto: cloudRes.secure_url },
+            { new: true }
+        ).select("-password");
+
+        // Broadcast updated profile info to connected clients
+        io.emit("userUpdated", {
+            userId: loggedInUserId,
+            profilePhoto: cloudRes.secure_url,
+        });
+
+        return res.status(200).json({
+            message: "Profile photo updated successfully!",
+            user: updatedUser,
+            profilePhoto: cloudRes.secure_url,
+            success: true
+        });
+    } catch (error) {
+        console.error("Error updating profile photo:", error);
+        return res.status(500).json({ message: "Internal server error updating profile photo." });
+    }
+};
+
+export const updateProfile = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const { fullName } = req.body;
+
+        const updateData = {};
+        if (fullName && fullName.trim() !== "") {
+            updateData.fullName = fullName.trim();
+        }
+
+        if (req.file) {
+            const cloudRes = await uploadToCloudinary(req.file.buffer);
+            if (cloudRes?.secure_url) {
+                updateData.profilePhoto = cloudRes.secure_url;
+            }
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No profile changes provided." });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            loggedInUserId,
+            updateData,
+            { new: true }
+        ).select("-password");
+
+        // Broadcast updated profile info to connected clients
+        io.emit("userUpdated", {
+            userId: loggedInUserId,
+            fullName: updatedUser.fullName,
+            profilePhoto: updatedUser.profilePhoto,
+        });
+
+        return res.status(200).json({
+            message: "Profile updated successfully!",
+            user: updatedUser,
+            success: true
+        });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        return res.status(500).json({ message: "Internal server error updating profile." });
+    }
+};

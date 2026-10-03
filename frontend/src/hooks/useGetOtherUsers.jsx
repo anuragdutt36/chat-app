@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setOtherUsers } from '../redux/userSlice';
@@ -20,7 +20,7 @@ const useGetOtherUsers = () => {
             }
         }
         fetchOtherUsers();
-    }, [])
+    }, [dispatch])
 
 }
 

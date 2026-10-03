@@ -18,6 +18,9 @@ const userSlice = createSlice({
   reducers: {
     setAuthUser: (state, action) => {
       state.authUser = action.payload;
+      if (action.payload?.blockedUsers) {
+        state.blockedUsers = action.payload.blockedUsers;
+      }
     },
     setOtherUsers: (state, action) => {
       state.otherUsers = action.payload;
@@ -27,6 +30,9 @@ const userSlice = createSlice({
     },
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload;
+    },
+    setBlockedUsers: (state, action) => {
+      state.blockedUsers = action.payload || [];
     },
     toggleMuteUser: (state, action) => {
       const userId = action.payload;
@@ -66,6 +72,7 @@ export const {
   setOtherUsers,
   setSelectedUser,
   setOnlineUsers,
+  setBlockedUsers,
   toggleMuteUser,
   toggleBlockUser,
   updateSettings

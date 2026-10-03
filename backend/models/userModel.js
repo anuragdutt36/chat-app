@@ -24,6 +24,12 @@ const userModel = new mongoose.Schema(
       enum: ["male", "female"],
       required: true,
     },
+    blockedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

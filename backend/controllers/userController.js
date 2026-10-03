@@ -68,6 +68,7 @@ export const login = async (req, res) => {
             username: user.username,
             fullName: user.fullName,
             profilePhoto: user.profilePhoto,
+            blockedUsers: user.blockedUsers || [],
             token: token,
             message: `Welcome back ${user.fullName}`,
             success: true
@@ -97,5 +98,44 @@ export const getOtherUsers = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error fetching users", success: false });
+    }
+}
+export const toggleBlock = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const targetUserId = req.params.id;
+
+        const user = await User.findById(loggedInUserId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        if (!user.blockedUsers) {
+            user.blockedUsers = [];
+        }
+
+        const isAlreadyBlocked = user.blockedUsers.some(
+            (id) => id.toString() === targetUserId.toString()
+        );
+
+        if (isAlreadyBlocked) {
+            user.blockedUsers = user.blockedUsers.filter(
+                (id) => id.toString() !== targetUserId.toString()
+            );
+        } else {
+            user.blockedUsers.push(targetUserId);
+        }
+
+        await user.save();
+
+        return res.status(200).json({
+            isBlocked: !isAlreadyBlocked,
+            blockedUsers: user.blockedUsers,
+            message: !isAlreadyBlocked ? "User blocked successfully." : "User unblocked successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Failed to toggle block status." });
     }
 }

@@ -3,8 +3,10 @@ import SendInput from "./SendInput";
 import Messages from "./Messages";
 import { useSelector, useDispatch } from "react-redux";
 import { setMessages } from "../redux/messageSlice";
-import { toggleMuteUser, toggleBlockUser } from "../redux/userSlice";
+import { toggleMuteUser, toggleBlockUser, setBlockedUsers } from "../redux/userSlice";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { BASE_URL } from "..";
 import {
   HiDotsVertical,
   HiOutlineUser,
@@ -65,21 +67,39 @@ const MessageContainer = () => {
     }
   };
 
-  const handleClearChat = () => {
+  const handleClearChat = async () => {
     setMenuOpen(false);
-    if (window.confirm("Are you sure you want to clear this chat history locally?")) {
-      dispatch(setMessages([]));
-      toast.success("Chat history cleared");
+    if (!selectedUser?._id) return;
+    if (window.confirm("Are you sure you want to permanently clear this chat history from the database?")) {
+      try {
+        await axios.delete(`${BASE_URL}/api/v1/message/clear/${selectedUser._id}`);
+        dispatch(setMessages([]));
+        toast.success("Chat history cleared from database");
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data?.message || "Failed to clear chat history");
+      }
     }
   };
 
-  const handleToggleBlock = () => {
+  const handleToggleBlock = async () => {
     setMenuOpen(false);
-    dispatch(toggleBlockUser(selectedUser?._id));
-    if (!isBlocked) {
-      toast.error(`${selectedUser?.fullName} has been blocked`);
-    } else {
-      toast.success(`${selectedUser?.fullName} has been unblocked`);
+    if (!selectedUser?._id) return;
+    try {
+      const res = await axios.post(`${BASE_URL}/api/v1/user/block/${selectedUser._id}`);
+      if (res.data?.blockedUsers) {
+        dispatch(setBlockedUsers(res.data.blockedUsers));
+      } else {
+        dispatch(toggleBlockUser(selectedUser._id));
+      }
+      if (res.data?.isBlocked) {
+        toast.error(`${selectedUser?.fullName} has been blocked`);
+      } else {
+        toast.success(`${selectedUser?.fullName} has been unblocked`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to update block status");
     }
   };
 

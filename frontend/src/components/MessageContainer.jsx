@@ -33,12 +33,12 @@ const MessageContainer = () => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const isMuted = mutedUsers?.includes(selectedUser?._id);
-  const isBlocked = blockedUsers?.includes(selectedUser?._id);
+  const isMuted = Boolean(mutedUsers && selectedUser?._id && mutedUsers.some((id) => id?.toString() === selectedUser._id.toString()));
+  const isBlocked = Boolean(blockedUsers && selectedUser?._id && blockedUsers.some((id) => id?.toString() === selectedUser._id.toString()));
 
   const menuRef = useRef(null);
 
-  const isOnline = onlineUsers?.includes(selectedUser?._id);
+  const isOnline = Boolean(onlineUsers && selectedUser?._id && onlineUsers.some((id) => id?.toString() === selectedUser._id.toString()));
 
   // Close menu on click outside
   useEffect(() => {

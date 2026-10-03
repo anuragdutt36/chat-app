@@ -8,8 +8,8 @@ const Message = ({ message }) => {
   const scroll = useRef();
   const { authUser, selectedUser, onlineUsers, appSettings } = useSelector((store) => store.user);
   const formattedTime = extractTime(message.createdAt);
-  const isMe = message?.senderId === authUser?._id;
-  const isRead = message?.isRead || onlineUsers?.includes(selectedUser?._id);
+  const isMe = message?.senderId?.toString() === authUser?._id?.toString();
+  const isRead = message?.isRead || Boolean(onlineUsers && selectedUser?._id && onlineUsers.some((id) => id?.toString() === selectedUser._id.toString()));
   const isDarkMode = appSettings?.darkMode ?? true;
 
   useEffect(() => {

@@ -5,9 +5,9 @@ import { setSelectedUser } from "../redux/userSlice";
 const OtherUser = ({ user }) => {
   const dispatch = useDispatch();
   const { selectedUser, onlineUsers, blockedUsers, appSettings } = useSelector((store) => store.user);
-  const isOnline = onlineUsers?.includes(user._id);
-  const isBlocked = blockedUsers?.includes(user._id);
-  const isSelected = selectedUser?._id === user?._id;
+  const isOnline = Boolean(onlineUsers && user?._id && onlineUsers.some(id => id?.toString() === user._id.toString()));
+  const isBlocked = Boolean(blockedUsers && user?._id && blockedUsers.some(id => id?.toString() === user._id.toString()));
+  const isSelected = selectedUser?._id?.toString() === user?._id?.toString();
   const isDarkMode = appSettings?.darkMode ?? true;
 
   const selectedUserHandler = (user) => {

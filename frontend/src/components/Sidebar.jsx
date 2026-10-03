@@ -19,7 +19,7 @@ import { BASE_URL } from "..";
 const Sidebar = () => {
   const [search, setSearch] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { authUser, appSettings } = useSelector((store) => store.user);
+  const { authUser, selectedUser, appSettings } = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

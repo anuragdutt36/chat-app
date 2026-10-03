@@ -39,10 +39,10 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-4">
-      <div className="w-full p-8 rounded-3xl shadow-2xl bg-slate-900/70 backdrop-blur-2xl border border-white/10 ring-1 ring-white/5">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-slate-100 tracking-tight">
+    <div className="w-full max-w-md mx-auto px-3 sm:px-4">
+      <div className="w-full p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl bg-slate-900/70 backdrop-blur-2xl border border-white/10 ring-1 ring-white/5">
+        <div className="text-center mb-5 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
             Welcome Back
           </h1>
           <p className="text-sm text-slate-400 mt-1.5">

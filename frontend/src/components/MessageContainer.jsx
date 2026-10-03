@@ -3,7 +3,7 @@ import SendInput from "./SendInput";
 import Messages from "./Messages";
 import { useSelector, useDispatch } from "react-redux";
 import { setMessages } from "../redux/messageSlice";
-import { toggleMuteUser, toggleBlockUser, setBlockedUsers } from "../redux/userSlice";
+import { toggleMuteUser, toggleBlockUser, setBlockedUsers, setSelectedUser } from "../redux/userSlice";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { BASE_URL } from "..";
@@ -16,6 +16,7 @@ import {
   HiOutlineBan,
   HiOutlineFlag,
   HiOutlineX,
+  HiChevronLeft,
 } from "react-icons/hi";
 import { BiBellOff } from "react-icons/bi";
 
@@ -112,22 +113,36 @@ const MessageContainer = () => {
     <>
       {selectedUser !== null ? (
         <div
-          className={`sm:h-[650px] md:min-w-[550px] lg:h-[650px] lg:min-w-[700px] md:h-[550px] flex flex-col relative transition-all duration-300 ${
+          className={`flex-1 w-full h-full flex flex-col relative transition-all duration-300 ${
             isDarkMode ? "bg-slate-950/40" : "bg-slate-100/40"
           }`}
         >
           {/* Header */}
           <div
-            className={`flex items-center justify-between px-6 py-3.5 border-b shadow-sm z-20 transition-all duration-300 ${
+            className={`flex items-center justify-between px-3.5 sm:px-6 py-3 sm:py-3.5 border-b shadow-sm z-20 transition-all duration-300 ${
               isDarkMode
                 ? "bg-slate-900/60 backdrop-blur-xl text-white border-white/10"
                 : "bg-white/80 backdrop-blur-xl text-slate-900 border-slate-200"
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div className="relative">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              {/* Mobile Back Button */}
+              <button
+                type="button"
+                onClick={() => dispatch(setSelectedUser(null))}
+                className={`md:hidden p-1.5 -ml-1 rounded-xl transition-colors shrink-0 ${
+                  isDarkMode
+                    ? "text-slate-300 hover:text-white hover:bg-white/10 active:bg-white/20"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 active:bg-slate-300/70"
+                }`}
+                title="Back to contacts"
+              >
+                <HiChevronLeft size={24} />
+              </button>
+
+              <div className="relative shrink-0">
                 <div
-                  className={`w-11 h-11 rounded-full overflow-hidden border shadow-sm ${
+                  className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden border shadow-sm ${
                     isDarkMode ? "border-white/20 bg-slate-800" : "border-slate-300 bg-slate-200"
                   }`}
                 >
@@ -455,7 +470,7 @@ const MessageContainer = () => {
         </div>
       ) : (
         <div
-          className={`md:min-w-[550px] lg:min-w-[700px] flex flex-col justify-center items-center h-full px-6 transition-all duration-300 ${
+          className={`hidden md:flex flex-1 flex-col justify-center items-center h-full px-6 transition-all duration-300 ${
             isDarkMode ? "bg-slate-950/30 backdrop-blur-md text-white" : "bg-slate-50/70 backdrop-blur-md text-slate-900"
           }`}
         >

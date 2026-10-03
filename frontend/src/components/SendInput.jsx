@@ -86,7 +86,7 @@ const SendInput = () => {
       {showPicker && (
         <div
           ref={pickerRef}
-          className={`absolute bottom-20 left-4 z-50 shadow-2xl rounded-2xl overflow-hidden border transition-all animate-in fade-in zoom-in-95 duration-150 ${
+          className={`absolute bottom-16 sm:bottom-20 left-2 sm:left-4 z-50 shadow-2xl rounded-2xl overflow-hidden border transition-all animate-in fade-in zoom-in-95 duration-150 max-w-[calc(100vw-1rem)] ${
             isDarkMode ? "border-slate-700/80" : "border-slate-300"
           }`}
         >
@@ -95,14 +95,14 @@ const SendInput = () => {
             onEmojiClick={onEmojiClick}
             autoFocusSearch={false}
             searchPlaceHolder="Search emoji..."
-            width={320}
-            height={400}
+            width={Math.min(320, typeof window !== "undefined" ? window.innerWidth - 24 : 300)}
+            height={380}
             previewConfig={{ showPreview: false }}
           />
         </div>
       )}
 
-      <form onSubmit={onSubmitHandler} className="relative flex items-center gap-2.5">
+      <form onSubmit={onSubmitHandler} className="relative flex items-center gap-1.5 sm:gap-2.5">
         <div className="w-full relative flex items-center">
           <button
             ref={buttonRef}

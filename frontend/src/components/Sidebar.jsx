@@ -42,7 +42,9 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`border-r sm:w-[260px] md:h-[550px] sm:h-[650px] lg:min-w-[320px] lg:h-[650px] p-4 flex flex-col transition-all duration-300 ${
+      className={`border-r md:border-r border-transparent ${
+        selectedUser ? "hidden md:flex" : "flex"
+      } w-full md:w-[280px] lg:w-[320px] md:shrink-0 h-full p-3.5 sm:p-4 flex-col transition-all duration-300 ${
         isDarkMode
           ? "border-white/10 bg-slate-900/60 backdrop-blur-xl text-slate-100"
           : "border-slate-200/80 bg-slate-50/80 backdrop-blur-xl text-slate-800"

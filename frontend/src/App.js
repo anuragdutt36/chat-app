@@ -57,10 +57,9 @@ function App() {
   },[authUser]);
 
   return (
-    <div className="p-4 h-screen flex items-center justify-center">
+    <div className="w-full h-[100dvh] sm:h-screen flex items-center justify-center p-0 sm:p-3 md:p-6 overflow-hidden">
       <RouterProvider router={router}/>
     </div>
-
   );
 }
 

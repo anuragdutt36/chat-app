@@ -23,9 +23,21 @@ const PORT = process.env.PORT || 5000;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json()); 
 app.use(cookieParser());
-const corsOption={
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials:true
+const allowedFrontend = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.trim().replace(/\/$/, "") : 'http://localhost:3000';
+
+const corsOption = {
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (
+            origin === allowedFrontend ||
+            origin === 'http://localhost:3000' ||
+            origin.endsWith('.vercel.app')
+        ) {
+            return callback(null, true);
+        }
+        return callback(null, true);
+    },
+    credentials: true
 };
 app.use(cors(corsOption)); 
 

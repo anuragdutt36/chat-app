@@ -34,9 +34,11 @@ function App() {
   useEffect(()=>{
     if(authUser){
       const socketio = io(`${BASE_URL}`, {
-          query:{
-            userId:authUser._id
-          }
+          query: {
+            userId: authUser._id
+          },
+          transports: ['websocket', 'polling'],
+          withCredentials: true
       });
       dispatch(setSocket(socketio));
 

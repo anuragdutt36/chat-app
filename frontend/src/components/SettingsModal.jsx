@@ -6,6 +6,7 @@ import {
   HiOutlineMoon,
   HiOutlineSun,
   HiCamera,
+  HiPencil,
 } from "react-icons/hi";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSettings, setAuthUser } from "../redux/userSlice";
@@ -35,6 +36,8 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [fullNameInput, setFullNameInput] = useState(authUser?.fullName || "");
   const [savingName, setSavingName] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleUpdateName = async () => {
     if (!fullNameInput.trim()) {
@@ -179,7 +182,52 @@ const SettingsModal = ({ isOpen, onClose }) => {
                 className="hidden"
               />
             </div>
-            <p className="font-semibold text-sm mt-2">{authUser?.fullName}</p>
+            {isEditingName ? (
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="text"
+                  value={fullNameInput}
+                  onChange={(e) => setFullNameInput(e.target.value)}
+                  className={`text-xs px-2.5 py-1.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    isDarkMode
+                      ? "bg-slate-800 border-slate-700 text-slate-100"
+                      : "bg-slate-100 border-slate-300 text-slate-900"
+                  }`}
+                  placeholder="Enter full name"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={handleUpdateName}
+                  disabled={savingName}
+                  className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow transition-colors disabled:opacity-50"
+                >
+                  {savingName ? "Saving..." : "Save"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingName(false);
+                    setFullNameInput(authUser?.fullName || "");
+                  }}
+                  className="px-2 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 mt-2">
+                <p className="font-semibold text-sm">{authUser?.fullName}</p>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingName(true)}
+                  className="p-1 text-slate-400 hover:text-blue-400 transition-colors"
+                  title="Edit full name"
+                >
+                  <HiPencil size={14} />
+                </button>
+              </div>
+            )}
             <p className="text-xs text-slate-400">@{authUser?.username}</p>
             <button
               type="button"
